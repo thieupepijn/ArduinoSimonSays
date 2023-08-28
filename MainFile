@@ -104,10 +104,13 @@ const int BUTTON_PIN_GREEN = 9;
 const int BUTTON_PIN_YELLOW = 10;
 const int BUTTON_PIN_RED = 11;
 
-enum gamestates {WAITING, FLASHING, RESPONDING};
+enum gamestates { WAITING,
+                  FLASHING,
+                  RESPONDING };
 
 gamestates GameState;
 
+int lastPinNumber;
 int LightsFlashOrder[4];
 
 void setup() {
@@ -129,7 +132,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  CheckButtonPressed();
+  if (GameState == WAITING) {
+    CheckStartButtonPressed();
+  }
 
   if (GameState == FLASHING) {
     FlashLightsInRandomOrder();
@@ -140,12 +145,16 @@ void loop() {
     } else {
       MakeSadSound();
     }
+    GameState = RESPONDING;
+  }
+
+  if (GameState == RESPONDING) {
     GameState = WAITING;
   }
 }
 
 void FlashLightsInRandomOrder() {
-  int lastPinNumber = 0;
+  lastPinNumber = 0;
   randomSeed(millis());
   for (int count = 1; count < 5; count++) {
     //zet alle lampjes en speaker uit
@@ -167,13 +176,13 @@ void FlashLightsInRandomOrder() {
 }
 
 void FlashAllLights() {
-  for (int teller = 1; teller <4; teller++) {
+  for (int teller = 1; teller < 4; teller++) {
     TurnOffAllLights();
     delay(500);
     TurnOnAllLights();
     delay(500);
   }
-   TurnOffAllLights();
+  TurnOffAllLights();
 }
 
 void TurnOffAllLights() {
@@ -190,7 +199,7 @@ void TurnOnAllLights() {
   digitalWrite(LIGHT_PIN_RED, HIGH);
 }
 
-void CheckButtonPressed() {
+void CheckStartButtonPressed() {
   int buttonState = digitalRead(START_BUTTON_PIN);
   if (buttonState == HIGH) {
     GameState = FLASHING;
