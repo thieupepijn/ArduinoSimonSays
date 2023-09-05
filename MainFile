@@ -139,17 +139,22 @@ void loop() {
   if (GameState == FLASHING) {
     FlashLightsInRandomOrder();
     TurnOffAllLights();
-    if ((LightsFlashOrder[3] == LIGHT_PIN_RED) or (LightsFlashOrder[3] == LIGHT_PIN_YELLOW)) {
-      MakeHappySound();
-      FlashAllLights();
-    } else {
-      MakeSadSound();
-    }
+  //  if ((LightsFlashOrder[3] == LIGHT_PIN_RED) or (LightsFlashOrder[3] == LIGHT_PIN_YELLOW)) {
+    //  MakeHappySound();
+      //FlashAllLights();
+    //} else {
+    //  MakeSadSound();
+    //}
     GameState = RESPONDING;
   }
 
   if (GameState == RESPONDING) {
+    if (CheckResponseButtonPressed())
+    {
+       MakeHappySound();
+      FlashAllLights();
     GameState = WAITING;
+    }
   }
 }
 
@@ -205,6 +210,21 @@ void CheckStartButtonPressed() {
     GameState = FLASHING;
   }
 }
+
+boolean CheckResponseButtonPressed() {
+  int blueButtonState = digitalRead(BUTTON_PIN_BLUE);
+  int greenButtonState = digitalRead(BUTTON_PIN_GREEN);
+  int yellowButtonState = digitalRead(BUTTON_PIN_YELLOW);
+  int redButtonState = digitalRead(BUTTON_PIN_RED);
+
+  if ((blueButtonState == HIGH) or (greenButtonState == HIGH) or (yellowButtonState == HIGH) or (redButtonState == HIGH)) {
+      return true;
+    }
+  else {
+    return false;
+  }
+}
+
 
 void MakeHappySound() {
   for (int counter = 0; counter < 2; counter++) {
