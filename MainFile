@@ -139,21 +139,21 @@ void loop() {
   if (GameState == FLASHING) {
     FlashLightsInRandomOrder();
     TurnOffAllLights();
-  //  if ((LightsFlashOrder[3] == LIGHT_PIN_RED) or (LightsFlashOrder[3] == LIGHT_PIN_YELLOW)) {
-    //  MakeHappySound();
-      //FlashAllLights();
-    //} else {
-    //  MakeSadSound();
-    //}
     GameState = RESPONDING;
   }
 
   if (GameState == RESPONDING) {
-    if (CheckResponseButtonPressed())
-    {
-       MakeHappySound();
+    int responseButtonPressed = CheckResponseButtonPressed();
+    if (responseButtonPressed == lastPinNumber + 5) {
+      MakeHappySound();
       FlashAllLights();
-    GameState = WAITING;
+    } else {
+      MakeSadSound;
+      //delay(1000);
+    }
+
+    if (responseButtonPressed > 0) {
+      GameState = WAITING;
     }
   }
 }
@@ -211,19 +211,26 @@ void CheckStartButtonPressed() {
   }
 }
 
-boolean CheckResponseButtonPressed() {
+
+int CheckResponseButtonPressed() {
   int blueButtonState = digitalRead(BUTTON_PIN_BLUE);
   int greenButtonState = digitalRead(BUTTON_PIN_GREEN);
   int yellowButtonState = digitalRead(BUTTON_PIN_YELLOW);
   int redButtonState = digitalRead(BUTTON_PIN_RED);
 
-  if ((blueButtonState == HIGH) or (greenButtonState == HIGH) or (yellowButtonState == HIGH) or (redButtonState == HIGH)) {
-      return true;
-    }
-  else {
-    return false;
+  if (blueButtonState == HIGH) {
+    return BUTTON_PIN_BLUE;
+  } else if (greenButtonState == HIGH) {
+    return BUTTON_PIN_GREEN;
+  } else if (yellowButtonState == HIGH) {
+    return BUTTON_PIN_YELLOW;
+  } else if (redButtonState == HIGH) {
+    return BUTTON_PIN_RED;
+  } else {
+    return -1;
   }
 }
+
 
 
 void MakeHappySound() {
@@ -258,9 +265,9 @@ void MakeHappySound() {
 
 
 void MakeSadSound() {
-  tone(SPEAKER_PIN, NOTE_G4);
-  delay(250);
-  tone(SPEAKER_PIN, NOTE_C4);
-  delay(500);
-  noTone(SPEAKER_PIN);
+    tone(SPEAKER_PIN, NOTE_G4);
+    delay(250);
+    tone(SPEAKER_PIN, NOTE_C4);
+    delay(500);
+    noTone(SPEAKER_PIN);
 }
