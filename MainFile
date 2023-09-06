@@ -144,15 +144,13 @@ void loop() {
 
   if (GameState == RESPONDING) {
     int responseButtonPressed = CheckResponseButtonPressed();
-    if (responseButtonPressed == lastPinNumber + 5) {
-      MakeHappySound();
-      FlashAllLights();
-    } else {
-      MakeSadSound;
-      //delay(1000);
-    }
-
     if (responseButtonPressed > 0) {
+      if (responseButtonPressed == lastPinNumber + 5) {
+        MakeHappySound();
+        FlashAllLights();
+      } else {
+        MakeSadSound();
+      }
       GameState = WAITING;
     }
   }
@@ -264,10 +262,11 @@ void MakeHappySound() {
 }
 
 
+
 void MakeSadSound() {
-    tone(SPEAKER_PIN, NOTE_G4);
-    delay(250);
-    tone(SPEAKER_PIN, NOTE_C4);
-    delay(500);
-    noTone(SPEAKER_PIN);
+  tone(SPEAKER_PIN, NOTE_G4);
+  delay(250);
+  tone(SPEAKER_PIN, NOTE_C4);
+  delay(500);
+  noTone(SPEAKER_PIN);
 }
