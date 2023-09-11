@@ -106,12 +106,17 @@ const int BUTTON_PIN_RED = 11;
 
 enum gamestates { WAITING,
                   FLASHING,
-                  RESPONDING };
+                  RESPONDING
+                };
 
 gamestates GameState;
 
-int lastPinNumber;
+int LastPinNumber;
+int NumberOfLights = 4;
 int LightsFlashOrder[4];
+int AnswerNumber = 0;
+int LastButtonPressed = 0;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -139,25 +144,34 @@ void loop() {
   if (GameState == FLASHING) {
     FlashLightsInRandomOrder();
     TurnOffAllLights();
+    LastButtonPressed = 0;
     GameState = RESPONDING;
   }
 
   if (GameState == RESPONDING) {
     int responseButtonPressed = CheckResponseButtonPressed();
-    if (responseButtonPressed > 0) {
-      if (responseButtonPressed == lastPinNumber + 5) {
-        MakeHappySound();
-        FlashAllLights();
+    if (AnswerNumber == 4)
+    {
+      MakeHappySound();
+      FlashAllLights();
+      AnswerNumber = 0;
+      GameState = WAITING;
+    }
+    if ((responseButtonPressed > 0) and ((responseButtonPressed != LastButtonPressed) or (LastButtonPressed == 0))) {
+      if (responseButtonPressed == (LightsFlashOrder[AnswerNumber]  + (NumberOfLights + 1))){ // (LastPinNumber + (NumberOfLights + 1))) {
+        AnswerNumber++;
+        LastButtonPressed = responseButtonPressed; 
       } else {
         MakeSadSound();
+        AnswerNumber = 0;
+        GameState = WAITING;
       }
-      GameState = WAITING;
     }
   }
 }
 
 void FlashLightsInRandomOrder() {
-  lastPinNumber = 0;
+  LastPinNumber = 0;
   randomSeed(millis());
   for (int count = 1; count < 5; count++) {
     //zet alle lampjes en speaker uit
@@ -165,11 +179,11 @@ void FlashLightsInRandomOrder() {
     //zet huidige lampje aan
     int pinNumber = random(LIGHT_PIN_BLUE, LIGHT_PIN_RED + 1);
 
-    if (pinNumber == lastPinNumber) {
+    if (pinNumber == LastPinNumber) {
       count--;
       continue;
     } else {
-      lastPinNumber = pinNumber;
+      LastPinNumber = pinNumber;
       LightsFlashOrder[count - 1] = pinNumber;
       digitalWrite(pinNumber, HIGH);
       //even wachten
