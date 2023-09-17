@@ -100,7 +100,7 @@ const int BUTTON_PIN_GREEN = 6;
 const int BUTTON_PIN_YELLOW = 7;
 const int BUTTON_PIN_RED = 8;
 
-const int SPEAKER_PIN = 8;
+const int SPEAKER_PIN = 9;
 
 const int LIGHT_PIN_BLUE = 10;
 const int LIGHT_PIN_GREEN = 11;
