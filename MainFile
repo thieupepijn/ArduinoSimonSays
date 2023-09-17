@@ -93,16 +93,19 @@
 
 
 //pins
-const int SPEAKER_PIN = 2;
-const int LIGHT_PIN_BLUE = 3;
-const int LIGHT_PIN_GREEN = 4;
-const int LIGHT_PIN_YELLOW = 5;
-const int LIGHT_PIN_RED = 6;
-const int START_BUTTON_PIN = 7;
-const int BUTTON_PIN_BLUE = 8;
-const int BUTTON_PIN_GREEN = 9;
-const int BUTTON_PIN_YELLOW = 10;
-const int BUTTON_PIN_RED = 11;
+const int START_BUTTON_PIN = 2;
+
+const int BUTTON_PIN_BLUE = 5;
+const int BUTTON_PIN_GREEN = 6;
+const int BUTTON_PIN_YELLOW = 7;
+const int BUTTON_PIN_RED = 8;
+
+const int SPEAKER_PIN = 8;
+
+const int LIGHT_PIN_BLUE = 10;
+const int LIGHT_PIN_GREEN = 11;
+const int LIGHT_PIN_YELLOW = 12;
+const int LIGHT_PIN_RED = 13;
 
 enum gamestates { WAITING,
                   FLASHING,
@@ -137,6 +140,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+  //   FlashAllLights();
   if (GameState == WAITING) {
     CheckStartButtonPressed();
   }
@@ -158,15 +163,16 @@ void loop() {
       GameState = WAITING;
     }
     if ((responseButtonPressed > 0) and ((responseButtonPressed != LastButtonPressed) or (LastButtonPressed == 0))) {
-      if (responseButtonPressed == (LightsFlashOrder[AnswerNumber]  + (NumberOfLights + 1))){ // (LastPinNumber + (NumberOfLights + 1))) {
+      if (responseButtonPressed == (LightsFlashOrder[AnswerNumber]  - (NumberOfLights + 1))) { 
         AnswerNumber++;
-        LastButtonPressed = responseButtonPressed; 
+        LastButtonPressed = responseButtonPressed;
       } else {
         MakeSadSound();
         AnswerNumber = 0;
         GameState = WAITING;
       }
     }
+
   }
 }
 
