@@ -93,7 +93,9 @@
 
 
 //pins
-const int START_BUTTON_PIN = 2;
+const int START_BUTTON_4FLASHES_PIN = 2;
+const int START_BUTTON_6FLASHES_PIN = 3;
+const int START_BUTTON_10FLASHES_PIN = 4;
 
 const int BUTTON_PIN_BLUE = 5;
 const int BUTTON_PIN_GREEN = 6;
@@ -107,6 +109,10 @@ const int LIGHT_PIN_GREEN = 11;
 const int LIGHT_PIN_YELLOW = 12;
 const int LIGHT_PIN_RED = 13;
 
+const int MAX_NUMBER_OF_FLASHES = 10;
+
+int NumberOfFlashes = 0;
+
 enum gamestates { WAITING,
                   FLASHING,
                   RESPONDING
@@ -115,10 +121,10 @@ enum gamestates { WAITING,
 gamestates GameState;
 
 int LastPinNumber;
-int NumberOfLights = 4;
-int LightsFlashOrder[4];
+int LightsFlashOrder[MAX_NUMBER_OF_FLASHES];
 int AnswerNumber = 0;
 int LastButtonPressed = 0;
+int DifferenceBetweenLightsAndResponseButtons = -5;
 
 
 void setup() {
@@ -129,7 +135,11 @@ void setup() {
   pinMode(LIGHT_PIN_GREEN, OUTPUT);
   pinMode(LIGHT_PIN_YELLOW, OUTPUT);
   pinMode(LIGHT_PIN_RED, OUTPUT);
-  pinMode(START_BUTTON_PIN, INPUT);
+  
+  pinMode(START_BUTTON_4FLASHES_PIN, INPUT);
+  pinMode(START_BUTTON_6FLASHES_PIN, INPUT);
+  pinMode(START_BUTTON_10FLASHES_PIN, INPUT);
+
   pinMode(BUTTON_PIN_BLUE, INPUT);
   pinMode(BUTTON_PIN_GREEN, INPUT);
   pinMode(BUTTON_PIN_YELLOW, INPUT);
@@ -155,7 +165,7 @@ void loop() {
 
   if (GameState == RESPONDING) {
     int responseButtonPressed = CheckResponseButtonPressed();
-    if (AnswerNumber == 4)
+    if (AnswerNumber == NumberOfFlashes)
     {
       MakeHappySound();
       FlashAllLights();
@@ -163,7 +173,7 @@ void loop() {
       GameState = WAITING;
     }
     if ((responseButtonPressed > 0) and ((responseButtonPressed != LastButtonPressed) or (LastButtonPressed == 0))) {
-      if (responseButtonPressed == (LightsFlashOrder[AnswerNumber]  - (NumberOfLights + 1))) { 
+      if (responseButtonPressed == (LightsFlashOrder[AnswerNumber]  + DifferenceBetweenLightsAndResponseButtons)) { 
         AnswerNumber++;
         LastButtonPressed = responseButtonPressed;
       } else {
@@ -179,7 +189,7 @@ void loop() {
 void FlashLightsInRandomOrder() {
   LastPinNumber = 0;
   randomSeed(millis());
-  for (int count = 1; count < 5; count++) {
+  for (int count = 1; count < NumberOfFlashes +1; count++) {
     //zet alle lampjes en speaker uit
     TurnOffAllLights();
     //zet huidige lampje aan
@@ -223,8 +233,21 @@ void TurnOnAllLights() {
 }
 
 void CheckStartButtonPressed() {
-  int buttonState = digitalRead(START_BUTTON_PIN);
-  if (buttonState == HIGH) {
+  int buttonState4FlashesButton = digitalRead(START_BUTTON_4FLASHES_PIN);
+  int buttonState6FlashesButton = digitalRead(START_BUTTON_6FLASHES_PIN);
+  int buttonState10FlashesButton = digitalRead(START_BUTTON_10FLASHES_PIN);
+
+ 
+  if (buttonState4FlashesButton == HIGH) {
+    NumberOfFlashes = 4;
+    GameState = FLASHING;
+  }
+  else if (buttonState6FlashesButton == HIGH) {
+    NumberOfFlashes = 6;
+    GameState = FLASHING;
+  }
+  else if (buttonState10FlashesButton == HIGH) {
+    NumberOfFlashes = 10;
     GameState = FLASHING;
   }
 }
